@@ -38,7 +38,7 @@ function resolvePromise(promise2, x, resolve, reject) {
             return
           }
           called = true;
-          resolvePromise(promise2, y, resolve, reject) // 判断y的值是不是一个promise。如果是就递归执行。然后改变promise2的状态
+          resolvePromise(promise2, y, resolve, reject) // 判断y的值是不是一个promise。如果是就递归执行。改变最外层的promise的状态。在此就是promise2 
         }, r => {
           if (called) {
             return
