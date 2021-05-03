@@ -1,14 +1,30 @@
-let Promise = require('./promise');
+let Promise = require('./promise')
 
-let p = new Promise((resolve, reject) => {
-  resolve(123);
-})
-let promise2 = p.then((data) => {
-  return promise2;
-})
+Promise.reject(1)
+  .then((data) => console.log(data, 'data'))
+  .catch((e) => console.log(e, 'err'))
 
-promise2.then(data=> {
-  console.log(data);
-}, err => {
-  console.log('err', err);
+Promise.resolve(123)
+  .finally(() => {
+    // console.log(1)
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(1)
+      }, 3000)
+    })
+  })
+  .then((data) => console.log(data, 'data'))
+  .catch((e) => {
+    console.log(e)
+  })
+
+let p1 = new Promise(() => {
+  throw new Error(1)
 })
+let p2 = new Promise((res, rej) => res(2))
+
+Promise.race([p1, p2])
+  .then((data) => {
+    console.log(data, 'data')
+  })
+  .catch((e) => console.log(e, 'err'))
