@@ -227,6 +227,61 @@ class Promise {
       }
     })
   }
+  static allSettled(promises) {
+    if (promises.length === 0) return Promise.resolve([])
+
+    const _promises = promises.map(
+      item => item instanceof Promise ? item : Promise.resolve(item)
+      )
+
+    return new Promise((resolve, reject) => {
+      const result = []
+      let unSettledPromiseCount = _promises.length
+
+      _promises.forEach((promise, index) => {
+        promise.then((value) => {
+          result[index] = {
+            status: 'fulfilled',
+            value
+          }
+
+          unSettledPromiseCount -= 1
+          // resolve after all are settled
+          if (unSettledPromiseCount === 0) {
+            resolve(result)
+          }
+        }, (reason) => {
+          result[index] = {
+            status: 'rejected',
+            reason
+          }
+
+          unSettledPromiseCount -= 1
+          // resolve after all are settled
+          if (unSettledPromiseCount === 0) {
+            resolve(result)
+          }
+        })
+      })
+    })
+  }
+  static any(promiseArr) {
+    let index = 0
+    return new Promise((resolve, reject) => {
+        if (promiseArr.length === 0) return 
+        promiseArr.forEach((p, i) => {
+            Promise.resolve(p).then(val => {
+                resolve(val)
+                
+            }, err => {
+                index++
+                if (index === promiseArr.length) {
+                  reject(new AggregateError('All promises were rejected'))
+                }
+            })
+        })
+    })
+  }
 }
 
 Promise.defer = Promise.deferred = function () {
